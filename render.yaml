@@ -3,7 +3,7 @@ services:
     name: go-mailing-api
     env: go
     plan: free
-    buildCommand: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app cmd/server/main.go
+    buildCommand: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o app cmd/server/main.go && ls -la
     startCommand: ./app
     envVars:
       - key: MONGODB_URI
