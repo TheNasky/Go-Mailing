@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/thenasky/go-framework/internal/core"
@@ -40,10 +44,47 @@ func main() {
 	// Now create router (this will initialize email module)
 	router := core.NewRouter()
 
-	logger.LogInfo("Server running at http://localhost:8080...")
-	if err := http.ListenAndServe("localhost:8081", router); err != nil {
-		log.Fatalf("Could not start server: %s\n", err)
+	// Get port from environment variable or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
+
+	// Create server with proper configuration
+	server := &http.Server{
+		Addr:         "0.0.0.0:" + port,
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	// Start server in a goroutine
+	go func() {
+		logger.LogInfo(fmt.Sprintf("Server running on port %s...", port))
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.LogError(fmt.Sprintf("Could not start server: %s", err))
+			os.Exit(1)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.LogInfo("Shutting down server...")
+
+	// Create a deadline for server shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// Attempt graceful shutdown
+	if err := server.Shutdown(ctx); err != nil {
+		logger.LogError(fmt.Sprintf("Server forced to shutdown: %s", err))
+	}
+
+	logger.LogInfo("Server exited")
 }
 
 // generateSwaggerDocs generates swagger purely from router definitions
