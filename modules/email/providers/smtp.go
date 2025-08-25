@@ -87,6 +87,7 @@ func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
 	}
 
 	// Add blank line between headers and body (RFC 5322 requirement)
+	// This creates the required separation: \r\n\r\n
 	message.WriteString("\r\n")
 
 	// Add body with proper line ending handling
@@ -94,6 +95,8 @@ func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
 	body := strings.ReplaceAll(email.HTML, "\n", "\r\n")
 	// Remove any carriage returns that might cause issues
 	body = strings.ReplaceAll(body, "\r\r", "\r")
+
+	// Write the body content
 	message.WriteString(body)
 
 	// Ensure message ends with proper line ending
@@ -102,12 +105,21 @@ func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
 	}
 
 	// Log the message for debugging (remove in production)
-	log.Printf("Generated email message for %s:\n%s", email.To, message.String())
+	messageStr := message.String()
+	log.Printf("Generated email message for %s:\n%s", email.To, messageStr)
 
 	// Validate the message format
-	messageStr := message.String()
 	if !strings.Contains(messageStr, "\r\n\r\n") {
 		log.Printf("WARNING: Message missing proper header-body separator")
+	} else {
+		log.Printf("✓ Message has proper header-body separator")
+	}
+
+	// Show the exact structure for debugging
+	parts := strings.Split(messageStr, "\r\n\r\n")
+	if len(parts) >= 2 {
+		log.Printf("✓ Headers section:\n%s", parts[0])
+		log.Printf("✓ Body section:\n%s", parts[1])
 	}
 
 	return []byte(messageStr)
