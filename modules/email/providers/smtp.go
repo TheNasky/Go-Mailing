@@ -3,8 +3,10 @@ package providers
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/smtp"
 	"strings"
+	"time"
 
 	"github.com/thenasky/go-framework/modules/email/models"
 )
@@ -33,7 +35,7 @@ func (p *SMTPProvider) Send(email *models.EmailJob) error {
 
 	// Connect to SMTP server
 	auth := smtp.PlainAuth("", p.config.SMTPUsername, p.config.SMTPPassword, p.config.SMTPHost)
-	
+
 	// Determine if we need TLS
 	var err error
 	if p.config.SMTPPort == 587 {
@@ -48,6 +50,9 @@ func (p *SMTPProvider) Send(email *models.EmailJob) error {
 	}
 
 	if err != nil {
+		// Log the email message for debugging
+		log.Printf("SMTP send failed for email to %s: %v", email.To, err)
+		log.Printf("Email message content: %s", string(message))
 		return fmt.Errorf("SMTP send failed: %w", err)
 	}
 
@@ -56,26 +61,41 @@ func (p *SMTPProvider) Send(email *models.EmailJob) error {
 
 // createEmailMessage creates the email message in proper format
 func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
-	// Create headers
+	// Create headers with proper RFC 5322 format
 	headers := make(map[string]string)
 	headers["From"] = p.config.SMTPFrom
 	headers["To"] = email.To
 	headers["Subject"] = email.Subject
+	headers["Date"] = time.Now().Format("Mon, 02 Jan 2006 15:04:05 -0700")
+	headers["Message-ID"] = fmt.Sprintf("<%d.%s@%s>", time.Now().UnixNano(), email.ID.Hex(), p.config.SMTPHost)
 	headers["MIME-Version"] = "1.0"
 	headers["Content-Type"] = "text/html; charset=UTF-8"
+	headers["Content-Transfer-Encoding"] = "8bit"
 
 	// Build message
 	var message strings.Builder
-	
+
 	// Add headers
 	for key, value := range headers {
 		message.WriteString(fmt.Sprintf("%s: %s\r\n", key, value))
 	}
 	message.WriteString("\r\n")
-	
-	// Add body
-	message.WriteString(email.HTML)
-	
+
+	// Add body with proper line ending handling
+	// Ensure HTML content doesn't break SMTP formatting
+	body := strings.ReplaceAll(email.HTML, "\n", "\r\n")
+	// Remove any carriage returns that might cause issues
+	body = strings.ReplaceAll(body, "\r\r", "\r")
+	message.WriteString(body)
+
+	// Ensure message ends with proper line ending
+	if !strings.HasSuffix(body, "\r\n") {
+		message.WriteString("\r\n")
+	}
+
+	// Log the message for debugging (remove in production)
+	log.Printf("Generated email message for %s:\n%s", email.To, message.String())
+
 	return []byte(message.String())
 }
 
@@ -127,7 +147,7 @@ func (p *SMTPProvider) sendWithSTARTTLS(auth smtp.Auth, message []byte, email *m
 // sendWithTLS sends email using SSL/TLS
 func (p *SMTPProvider) sendWithTLS(auth smtp.Auth, message []byte, email *models.EmailJob) error {
 	host := fmt.Sprintf("%s:%d", p.config.SMTPHost, p.config.SMTPPort)
-	
+
 	// Create TLS config
 	tlsConfig := &tls.Config{
 		ServerName: p.config.SMTPHost,
@@ -207,23 +227,23 @@ func (p *SMTPProvider) ValidateEmail(email string) error {
 	if email == "" {
 		return fmt.Errorf("email address is empty")
 	}
-	
+
 	if !strings.Contains(email, "@") {
 		return fmt.Errorf("invalid email format: missing @ symbol")
 	}
-	
+
 	parts := strings.Split(email, "@")
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid email format: multiple @ symbols")
 	}
-	
+
 	if parts[0] == "" || parts[1] == "" {
 		return fmt.Errorf("invalid email format: empty local or domain part")
 	}
-	
+
 	if !strings.Contains(parts[1], ".") {
 		return fmt.Errorf("invalid email format: domain must contain a dot")
 	}
-	
+
 	return nil
 }
