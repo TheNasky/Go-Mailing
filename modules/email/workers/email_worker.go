@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -118,6 +119,13 @@ func (w *EmailWorker) workerRoutine(workerID int) {
 
 			// Wait before checking for next job
 			time.Sleep(w.processingDelay)
+
+			// Add additional delay between workers to prevent rate limiting
+			if workerID == 0 {
+				time.Sleep(2 * time.Second)
+			} else {
+				time.Sleep(3 * time.Second)
+			}
 		}
 	}
 }
@@ -141,7 +149,26 @@ func (w *EmailWorker) processNextJob(workerID int) error {
 	if err := w.processJob(job); err != nil {
 		log.Printf("Worker %d failed to process job %s: %v", workerID, job.ID.Hex(), err)
 
-		// Mark job as failed
+		// Check if this is a rate limiting error
+		if strings.Contains(err.Error(), "Too many login attempts") ||
+			strings.Contains(err.Error(), "rate limit") ||
+			strings.Contains(err.Error(), "429") ||
+			strings.Contains(err.Error(), "454") {
+
+			// For rate limiting, add exponential backoff delay
+			backoffDelay := time.Duration(job.Attempts) * 30 * time.Second
+			if backoffDelay > 5*time.Minute {
+				backoffDelay = 5 * time.Minute
+			}
+
+			log.Printf("Rate limiting detected, backing off for %v before retry", backoffDelay)
+			time.Sleep(backoffDelay)
+
+			// Don't mark as failed immediately, let it retry later
+			return err
+		}
+
+		// Mark job as failed for non-rate-limiting errors
 		if markErr := w.queue.MarkFailed(job.ID, err.Error()); markErr != nil {
 			log.Printf("Worker %d failed to mark job %s as failed: %v", workerID, job.ID.Hex(), markErr)
 		}
