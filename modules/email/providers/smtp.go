@@ -85,6 +85,8 @@ func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
 	for _, h := range headers {
 		message.WriteString(fmt.Sprintf("%s: %s\r\n", h.key, h.value))
 	}
+
+	// Add blank line between headers and body (RFC 5322 requirement)
 	message.WriteString("\r\n")
 
 	// Add body with proper line ending handling
@@ -102,7 +104,13 @@ func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
 	// Log the message for debugging (remove in production)
 	log.Printf("Generated email message for %s:\n%s", email.To, message.String())
 
-	return []byte(message.String())
+	// Validate the message format
+	messageStr := message.String()
+	if !strings.Contains(messageStr, "\r\n\r\n") {
+		log.Printf("WARNING: Message missing proper header-body separator")
+	}
+
+	return []byte(messageStr)
 }
 
 // sendWithSTARTTLS sends email using STARTTLS
