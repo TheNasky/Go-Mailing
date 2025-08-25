@@ -1,0 +1,405 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Master Server API",
+    "description": "API documentation generated from router definitions"
+  },
+  "host": "localhost:8080",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/demo/bad-request": {
+      "get": {
+        "description": "Endpoint: /demo/bad-request",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/bad-request",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/business-rule": {
+      "get": {
+        "description": "Endpoint: /demo/business-rule",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/business-rule",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/conflict": {
+      "get": {
+        "description": "Endpoint: /demo/conflict",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/conflict",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/cors": {
+      "get": {
+        "description": "Endpoint: /demo/cors",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/cors",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/created": {
+      "get": {
+        "description": "Endpoint: /demo/created",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/created",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/custom-error": {
+      "get": {
+        "description": "Endpoint: /demo/custom-error",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/custom-error",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/data": {
+      "get": {
+        "description": "Endpoint: /demo/data",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/data",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/external-error": {
+      "get": {
+        "description": "Endpoint: /demo/external-error",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/external-error",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/forbidden": {
+      "get": {
+        "description": "Endpoint: /demo/forbidden",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/forbidden",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/internal-error": {
+      "get": {
+        "description": "Endpoint: /demo/internal-error",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/internal-error",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/json-body": {
+      "post": {
+        "description": "Endpoint: /demo/json-body",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "POST /demo/json-body",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/method-not-allowed": {
+      "get": {
+        "description": "Endpoint: /demo/method-not-allowed",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/method-not-allowed",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/not-found": {
+      "get": {
+        "description": "Endpoint: /demo/not-found",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/not-found",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/panic": {
+      "get": {
+        "description": "Endpoint: /demo/panic",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/panic",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/query-params": {
+      "get": {
+        "description": "Endpoint: /demo/query-params",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/query-params",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/rate-limit": {
+      "get": {
+        "description": "Endpoint: /demo/rate-limit",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/rate-limit",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/success": {
+      "get": {
+        "description": "Endpoint: /demo/success",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/success",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/unauthorized": {
+      "get": {
+        "description": "Endpoint: /demo/unauthorized",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/unauthorized",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/unprocessable": {
+      "get": {
+        "description": "Endpoint: /demo/unprocessable",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/unprocessable",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/validate": {
+      "post": {
+        "description": "Endpoint: /demo/validate",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "POST /demo/validate",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/validation-multiple": {
+      "get": {
+        "description": "Endpoint: /demo/validation-multiple",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/validation-multiple",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/demo/validation-single": {
+      "get": {
+        "description": "Endpoint: /demo/validation-single",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /demo/validation-single",
+        "tags": [
+          "demo"
+        ]
+      }
+    },
+    "/valuation/total": {
+      "get": {
+        "description": "Endpoint: /valuation/total",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "GET /valuation/total",
+        "tags": [
+          "sample"
+        ]
+      }
+    }
+  }
+}
