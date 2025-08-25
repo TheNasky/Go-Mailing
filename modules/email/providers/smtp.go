@@ -16,6 +16,20 @@ type SMTPProvider struct {
 	config *ProviderConfig
 }
 
+// extractEmailAddress extracts just the email address from a "Display Name <email@domain.com>" format
+func extractEmailAddress(from string) string {
+	// If it contains < and >, extract the email part
+	if strings.Contains(from, "<") && strings.Contains(from, ">") {
+		start := strings.Index(from, "<")
+		end := strings.Index(from, ">")
+		if start != -1 && end != -1 && end > start {
+			return from[start+1 : end]
+		}
+	}
+	// Otherwise return as-is (already just an email address)
+	return from
+}
+
 // NewSMTPProvider creates a new SMTP provider
 func NewSMTPProvider(config *ProviderConfig) *SMTPProvider {
 	return &SMTPProvider{
@@ -145,8 +159,9 @@ func (p *SMTPProvider) sendWithSTARTTLS(auth smtp.Auth, message []byte, email *m
 		return err
 	}
 
-	// Send email - FIXED: Use email.To instead of p.config.SMTPFrom
-	if err = client.Mail(p.config.SMTPFrom); err != nil {
+	// Send email - FIXED: Extract email address from display name format
+	fromEmail := extractEmailAddress(p.config.SMTPFrom)
+	if err = client.Mail(fromEmail); err != nil {
 		return err
 	}
 	if err = client.Rcpt(email.To); err != nil {
@@ -198,8 +213,9 @@ func (p *SMTPProvider) sendWithTLS(auth smtp.Auth, message []byte, email *models
 		return err
 	}
 
-	// Send email - FIXED: Use email.To instead of p.config.SMTPFrom
-	if err = client.Mail(p.config.SMTPFrom); err != nil {
+	// Send email - FIXED: Extract email address from display name format
+	fromEmail := extractEmailAddress(p.config.SMTPFrom)
+	if err = client.Mail(fromEmail); err != nil {
 		return err
 	}
 	if err = client.Rcpt(email.To); err != nil {
@@ -226,8 +242,10 @@ func (p *SMTPProvider) sendWithTLS(auth smtp.Auth, message []byte, email *models
 // sendPlain sends email using plain SMTP
 func (p *SMTPProvider) sendPlain(auth smtp.Auth, message []byte, email *models.EmailJob) error {
 	host := fmt.Sprintf("%s:%d", p.config.SMTPHost, p.config.SMTPPort)
-	// FIXED: Use email.To instead of p.config.SMTPFrom
-	return smtp.SendMail(host, auth, p.config.SMTPFrom, []string{email.To}, message)
+	// FIXED: Extract email address from display name format
+	fromEmail := extractEmailAddress(p.config.SMTPFrom)
+	log.Printf("SMTP MAIL FROM: %s (extracted from: %s)", fromEmail, p.config.SMTPFrom)
+	return smtp.SendMail(host, auth, fromEmail, []string{email.To}, message)
 }
 
 // GetName returns the provider name
