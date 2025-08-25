@@ -61,23 +61,29 @@ func (p *SMTPProvider) Send(email *models.EmailJob) error {
 
 // createEmailMessage creates the email message in proper format
 func (p *SMTPProvider) createEmailMessage(email *models.EmailJob) []byte {
-	// Create headers with proper RFC 5322 format
-	headers := make(map[string]string)
-	headers["From"] = p.config.SMTPFrom
-	headers["To"] = email.To
-	headers["Subject"] = email.Subject
-	headers["Date"] = time.Now().Format("Mon, 02 Jan 2006 15:04:05 -0700")
-	headers["Message-ID"] = fmt.Sprintf("<%d.%s@%s>", time.Now().UnixNano(), email.ID.Hex(), p.config.SMTPHost)
-	headers["MIME-Version"] = "1.0"
-	headers["Content-Type"] = "text/html; charset=UTF-8"
-	headers["Content-Transfer-Encoding"] = "8bit"
+	// Create headers with proper RFC 5322 format in consistent order
+	type header struct {
+		key   string
+		value string
+	}
+
+	headers := []header{
+		{"From", p.config.SMTPFrom},
+		{"To", email.To},
+		{"Subject", email.Subject},
+		{"Date", time.Now().Format("Mon, 02 Jan 2006 15:04:05 -0700")},
+		{"Message-ID", fmt.Sprintf("<%d.%s@%s>", time.Now().UnixNano(), email.ID.Hex(), p.config.SMTPHost)},
+		{"MIME-Version", "1.0"},
+		{"Content-Type", "text/html; charset=UTF-8"},
+		{"Content-Transfer-Encoding", "8bit"},
+	}
 
 	// Build message
 	var message strings.Builder
 
-	// Add headers
-	for key, value := range headers {
-		message.WriteString(fmt.Sprintf("%s: %s\r\n", key, value))
+	// Add headers in consistent order
+	for _, h := range headers {
+		message.WriteString(fmt.Sprintf("%s: %s\r\n", h.key, h.value))
 	}
 	message.WriteString("\r\n")
 
