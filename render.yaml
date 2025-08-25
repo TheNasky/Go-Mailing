@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: go-mailing-api
+    env: go
+    plan: free
+    buildCommand: go build -ldflags="-s -w" -o app cmd/server/main.go
+    startCommand: ./app
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://Game1:dPaO1Thu1LDvd4XZ@game.34p0l.mongodb.net/?retryWrites=true&w=majority&appName=Game
+      - key: MONGODB_DATABASE
+        value: mailing
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        value: quantyx.noreply@gmail.com
+      - key: SMTP_PASSWORD
+        value: xekw xoqs jinl zmvu
+      - key: SMTP_FROM
+        value: No reply <quantyx.noreply@gmail.com>
+      - key: SMTP_MAX_EMAILS_PER_HOUR
+        value: 1000
+      - key: SMTP_MAX_EMAILS_PER_DAY
+        value: 10000
+      - key: LOG_DATE_FORMAT
+        value: hour-minute
+      - key: LOG_ROUTE
+        value: false
+      - key: LOG_HEADERS
+        value: false
+      - key: LOG_BODY
+        value: false
+      - key: LOG_QUERIES
+        value: false
+      - key: LOG_RESPONSE
+        value: false
