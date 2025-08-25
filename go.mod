@@ -1,6 +1,6 @@
 module github.com/thenasky/go-framework
 
-go 1.24.6
+go 1.24.4
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5

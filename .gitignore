@@ -42,3 +42,5 @@ tmp/
 # Build artifacts
 build/
 dist/
+app.exe
+app
